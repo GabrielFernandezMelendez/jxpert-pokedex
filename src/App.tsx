@@ -21,6 +21,17 @@ import pokeball from "./assets/pokeball.svg";
 import type { Pokemon } from "./pokemon/domain/Pokemon";
 import type { Region } from "./pokemon/domain/Region";
 import type { SortOption } from "./pokemon/domain/SortOption";
+import { ApiPokemonRepository } from "./pokemon/infrastructure/ApiPokemonRepository";
+import { GetPokemons } from "./pokemon/application/GetPokemons";
+import { FilterPokemons } from "./pokemon/application/FilterPokemons";
+import { SortPokemons } from "./pokemon/application/SortPokemons";
+
+// Instanciamos el adaptador y los casos de uso fuera del componente para que no se recreen en cada render
+// Arquitectura Hexagonal — conectamos el adaptador con los casos de uso a través del puerto
+const repository = new ApiPokemonRepository();
+const getPokemons = new GetPokemons(repository);
+const filterPokemons = new FilterPokemons();
+const sortPokemons = new SortPokemons();
 
 /**
  *  Iconos de los tipos de Pokémon
@@ -69,144 +80,32 @@ export const App = () => {
   const [sortBy, setSortBy] = useState<SortOption>("default");
 
   useEffect(() => {
-    /**
-     *  Carga de datos de Pokémons y gestión de estado de cargando.
-     */
-    const getData = async () => {
+    // Caso de uso GetPokemons — delega el fetch al adaptador y la lógica de región al caso de uso
+    // App.tsx ya no sabe de offsets, limits ni URLs — solo pide pokémons por región
+    const loadPokemons = async () => {
       setIsLoading(true);
       setIsFiltering(true);
-
-      let regStart, regEnd;
-      if (region === "kanto") {
-        regStart = 0;
-        regEnd = 151;
-      } else if (region === "johto") {
-        regStart = 151;
-        regEnd = 100;
-      } else if (region === "hoenn") {
-        regStart = 251;
-        regEnd = 135;
-      } else if (region === "sinnoh") {
-        regStart = 386;
-        regEnd = 108;
-      } else if (region === "unova") {
-        regStart = 494;
-        regEnd = 155;
-      } else if (region === "kalos") {
-        regStart = 649;
-        regEnd = 72;
-      } else if (region === "alola") {
-        regStart = 721;
-        regEnd = 88;
-      } else if (region === "galar") {
-        regStart = 809;
-        regEnd = 96;
-      } else if (region === "paldea") {
-        regStart = 905;
-        regEnd = 120;
-      } else {
-        regStart = 0;
-        regEnd = 151;
-      }
-      const { results }: { results: { url: string }[] } = await fetch(
-        `https://pokeapi.co/api/v2/pokemon?offset=${regStart}&limit=${regEnd}`,
-      ).then((res) => res.json());
-      const result = await Promise.all(
-        results.map(async ({ url }) => await fetch(url).then((res) => res.json())),
-      );
+      const result = await getPokemons.execute(region);
       setPokemons(result);
       setFilteredPokemons(result);
       setIsLoading(false);
     };
-    getData();
+    loadPokemons();
   }, [region]);
+
   /**
    * Filters results based on input query term.
    */
+
   useEffect(() => {
-    setFilteredPokemons(
-      pokemons.filter(
-        (pokemon) =>
-          pokemon.name.includes(searchQuery.toLowerCase()) ||
-          !!pokemon.types.find((type) => type.type.name.startsWith(searchQuery.toLowerCase())),
-      ),
-    );
+    const results = filterPokemons.execute(pokemons, searchQuery);
+    setFilteredPokemons(results);
     setIsFiltering(false);
   }, [pokemons[0]?.id, searchQuery]);
-  /**
-   * Sorts results based on selected sorting criteria.
-   */
   useEffect(() => {
-    if (sortBy !== "default") {
-      if (sortBy === "hp") {
-        setFilteredPokemons((prev) =>
-          [...prev].sort((a, b) => {
-            //cambiamos para que devuelva el valor directamente y no hagamos un doble acceso a la propiedad , devuelve cero en caso de error o fallback
-            const aStat = a.stats.find((stat) => stat.stat.name === "hp")?.base_stat ?? 0;
-            const bStat = b.stats.find((stat) => stat.stat.name === "hp")?.base_stat ?? 0;
-            return bStat - aStat;
-          }),
-        );
-      }
-      if (sortBy === "attack") {
-        setFilteredPokemons((prev) =>
-          [...prev].sort((a, b) => {
-            const aStat = a.stats.find((stat) => stat.stat.name === "attack")?.base_stat ?? 0;
-            const bStat = b.stats.find((stat) => stat.stat.name === "attack")?.base_stat ?? 0;
-            return bStat - aStat;
-          }),
-        );
-      }
-      if (sortBy === "defense") {
-        setFilteredPokemons((prev) =>
-          [...prev].sort((a, b) => {
-            const aStat = a.stats.find((stat) => stat.stat.name === "defense")?.base_stat ?? 0;
-            const bStat = b.stats.find((stat) => stat.stat.name === "defense")?.base_stat ?? 0;
-            return bStat - aStat;
-          }),
-        );
-      }
-      if (sortBy === "special-attack") {
-        setFilteredPokemons((prev) =>
-          [...prev].sort((a, b) => {
-            const aStat =
-              a.stats.find((stat) => stat.stat.name === "special-attack")?.base_stat ?? 0;
-            const bStat =
-              b.stats.find((stat) => stat.stat.name === "special-attack")?.base_stat ?? 0;
-            return bStat - aStat;
-          }),
-        );
-      }
-      if (sortBy === "special-defense") {
-        setFilteredPokemons((prev) =>
-          [...prev].sort((a, b) => {
-            const aStat =
-              a.stats.find((stat) => stat.stat.name === "special-defense")?.base_stat ?? 0;
-            const bStat =
-              b.stats.find((stat) => stat.stat.name === "special-defense")?.base_stat ?? 0;
-            return bStat - aStat;
-          }),
-        );
-      }
-      if (sortBy === "speed") {
-        setFilteredPokemons((prev) =>
-          [...prev].sort((a, b) => {
-            const aStat = a.stats.find((stat) => stat.stat.name === "speed")?.base_stat ?? 0;
-            const bStat = b.stats.find((stat) => stat.stat.name === "speed")?.base_stat ?? 0;
-            return bStat - aStat;
-          }),
-        );
-      }
-    }
-    if (sortBy === "default") {
-      setFilteredPokemons((prev) =>
-        [...prev].sort((a, b) => {
-          return a.id - b.id;
-        }),
-      );
-    }
+    const sorted = sortPokemons.execute(filteredPokemons, sortBy);
+    setFilteredPokemons(sorted);
   }, [filteredPokemons[0]?.id, sortBy]);
-
   return (
     <div className="layout">
       <header className="header">
