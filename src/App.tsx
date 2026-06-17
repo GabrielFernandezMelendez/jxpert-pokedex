@@ -34,27 +34,10 @@ import { Footer } from "./components/organisms/Footer";
 import { SearchBar } from "./components/organisms/SearchBar";
 import { PokemonGrid } from "./components/organisms/PokemonGrid";
 
-// Mapa de iconos por tipo — dato de presentación
-const typeIcons: Record<string, string> = {
-  bug,
-  dark,
-  dragon,
-  electric,
-  fairy,
-  fighting,
-  fire,
-  flying,
-  ghost,
-  grass,
-  ground,
-  ice,
-  normal,
-  poison,
-  psychic,
-  rock,
-  steel,
-  water,
-};
+//iconos y constantes
+// Constantes — datos estáticos de UI
+import { typeIcons } from "./constants/typeIcons";
+import { HEADER, FOOTER } from "./constants/ui";
 
 export const App = () => {
   // Estado de la región seleccionada — vive aquí porque alimenta a usePokemons
@@ -76,7 +59,7 @@ export const App = () => {
 
   return (
     <div className="layout">
-      <Header logoSrc={pokeball} title="Pokédex" />
+      <Header logoSrc={HEADER.logoSrc} title={HEADER.title} />
 
       <main className="container">
         <SearchBar
@@ -114,9 +97,7 @@ export const App = () => {
         />
       </main>
 
-      <Footer
-        copyrightText={`©${new Date().getFullYear()} Pokémon. ©1995 - ${new Date().getFullYear()} Nintendo/Creatures Inc./GAME FREAK inc. TM, ®Nintendo.`}
-      />
+      <Footer copyrightText={FOOTER.copyrightText} />
     </div>
   );
 };
