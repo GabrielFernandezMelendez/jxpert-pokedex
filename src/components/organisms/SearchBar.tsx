@@ -21,7 +21,7 @@ const sortOptions: { value: SortOption; label: string; displayText: string }[] =
 type Props = {
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  regions: Region[];
+  regions: readonly Region[];
   selectedRegion: Region;
   isRegionDropdownOpen: boolean;
   onRegionToggle: () => void;

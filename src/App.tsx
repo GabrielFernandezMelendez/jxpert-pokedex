@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import bug from "./assets/bug.svg";
 import dark from "./assets/dark.svg";
 import dragon from "./assets/dragon.svg";
@@ -18,17 +17,16 @@ import rock from "./assets/rock.svg";
 import steel from "./assets/steel.svg";
 import water from "./assets/water.svg";
 import pokeball from "./assets/pokeball.svg";
+import { useState } from "react";
 
-// Dominio — tipos y constantes del negocio
-import type { Pokemon } from "./pokemon/domain/Pokemon";
-import type { SortOption } from "./pokemon/domain/SortOption";
+// Dominio
 import { type Region, regions } from "./pokemon/domain/Region";
 
-// Arquitectura Hexagonal — casos de uso e infraestructura
-import { ApiPokemonRepository } from "./pokemon/infrastructure/ApiPokemonRepository";
-import { GetPokemons } from "./pokemon/application/GetPokemons";
-import { FilterPokemons } from "./pokemon/application/FilterPokemons";
-import { SortPokemons } from "./pokemon/application/SortPokemons";
+// Custom Hooks — toda la lógica de estado y efectos vive aquí
+import { usePokemons } from "./hooks/usePokemons";
+import { usePokemonSearch } from "./hooks/usePokemonSearch";
+import { usePokemonSort } from "./hooks/usePokemonSort";
+import { useDropdown } from "./hooks/useDropdown";
 
 // Atomic Design — componentes de UI
 import { Header } from "./components/organisms/Header";
@@ -36,13 +34,7 @@ import { Footer } from "./components/organisms/Footer";
 import { SearchBar } from "./components/organisms/SearchBar";
 import { PokemonGrid } from "./components/organisms/PokemonGrid";
 
-// Instancias de casos de uso — fuera del componente para no recrearlas en cada render
-const repository = new ApiPokemonRepository();
-const getPokemons = new GetPokemons(repository);
-const filterPokemons = new FilterPokemons();
-const sortPokemons = new SortPokemons();
-
-// Mapa de iconos por tipo — dato de presentación, no de dominio
+// Mapa de iconos por tipo — dato de presentación
 const typeIcons: Record<string, string> = {
   bug,
   dark,
@@ -65,41 +57,22 @@ const typeIcons: Record<string, string> = {
 };
 
 export const App = () => {
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isFiltering, setIsFiltering] = useState<boolean>(false);
-  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
-  const [filteredPokemons, setFilteredPokemons] = useState<Pokemon[]>([]);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  // Estado de la región seleccionada — vive aquí porque alimenta a usePokemons
   const [region, setRegion] = useState<Region>("kanto");
-  const [isRegionDropdownOpen, setIsRegionDropdownOpen] = useState<boolean>(false);
-  const [isSortMenuOpen, setIsSortMenuOpen] = useState<boolean>(false);
-  const [sortBy, setSortBy] = useState<SortOption>("default");
 
-  // Fetch — obtiene pokémons de la región seleccionada
-  useEffect(() => {
-    const loadPokemons = async () => {
-      setIsLoading(true);
-      setIsFiltering(true);
-      const result = await getPokemons.execute(region);
-      setPokemons(result);
-      setFilteredPokemons(result);
-      setIsLoading(false);
-    };
-    loadPokemons();
-  }, [region]);
+  // Hook de fetch — carga pokémons de la región seleccionada
+  const { pokemons, isLoading } = usePokemons(region);
 
-  // Filter — filtra por nombre o tipo
-  useEffect(() => {
-    const results = filterPokemons.execute(pokemons, searchQuery);
-    setFilteredPokemons(results);
-    setIsFiltering(false);
-  }, [pokemons[0]?.id, searchQuery]);
+  // Hook de búsqueda — filtra pokémons por nombre o tipo
+  const { searchQuery, setSearchQuery, filteredPokemons, setFilteredPokemons, isFiltering } =
+    usePokemonSearch(pokemons);
 
-  // Sort — ordena los resultados filtrados
-  useEffect(() => {
-    const sorted = sortPokemons.execute(filteredPokemons, sortBy);
-    setFilteredPokemons(sorted);
-  }, [filteredPokemons[0]?.id, sortBy]);
+  // Hook de ordenación — ordena los pokémons filtrados por stat
+  const { sortBy, setSortBy } = usePokemonSort(filteredPokemons, setFilteredPokemons);
+
+  // Hooks de dropdowns — gestionan abrir/cerrar cada menú
+  const regionDropdown = useDropdown();
+  const sortMenu = useDropdown();
 
   return (
     <div className="layout">
@@ -111,28 +84,24 @@ export const App = () => {
           onSearchChange={setSearchQuery}
           regions={regions}
           selectedRegion={region}
-          isRegionDropdownOpen={isRegionDropdownOpen}
-          onRegionToggle={() =>
-            setIsRegionDropdownOpen((prev) => {
-              if (isSortMenuOpen) setIsSortMenuOpen(false);
-              return !prev;
-            })
-          }
+          isRegionDropdownOpen={regionDropdown.isOpen}
+          onRegionToggle={() => {
+            if (sortMenu.isOpen) sortMenu.close();
+            regionDropdown.toggle();
+          }}
           onRegionSelect={(r) => {
             setRegion(r);
-            setIsRegionDropdownOpen(false);
+            regionDropdown.close();
           }}
           sortBy={sortBy}
-          isSortMenuOpen={isSortMenuOpen}
-          onSortToggle={() =>
-            setIsSortMenuOpen((prev) => {
-              if (isRegionDropdownOpen) setIsRegionDropdownOpen(false);
-              return !prev;
-            })
-          }
+          isSortMenuOpen={sortMenu.isOpen}
+          onSortToggle={() => {
+            if (regionDropdown.isOpen) regionDropdown.close();
+            sortMenu.toggle();
+          }}
           onSortSelect={(option) => {
             setSortBy(option);
-            setIsSortMenuOpen(false);
+            sortMenu.close();
           }}
         />
 

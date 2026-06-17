@@ -6,7 +6,7 @@
 import type { Region } from "../../pokemon/domain/Region";
 
 type Props = {
-  regions: Region[];
+  regions: readonly Region[];
   selectedRegion: Region;
   isOpen: boolean;
   onToggle: () => void;
