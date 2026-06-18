@@ -1,7 +1,8 @@
 // Molécula — tarjeta que muestra la información de un Pokémon individual
 // En la web: cada card dentro del grid principal con imagen, tipos y stats
 // Atomic Design — molécula, combina los átomos StatBar y TypeIcon
-// Principio aplicado: Interface Segregation — recibe solo el Pokemon que necesita
+// Principio aplicado: Interface Segregation — recibe solo lo que necesita
+// El estado de favorito viene del padre vía props — el componente no sabe de localStorage
 
 import { type CSSProperties } from "react";
 import type { Pokemon } from "../../pokemon/domain/Pokemon";
@@ -11,9 +12,11 @@ import { TypeIcon } from "../atoms/TypeIcon";
 type Props = {
   pokemon: Pokemon;
   typeIcons: Record<string, string>;
+  isFavorite: boolean;
+  onToggleFavorite: (id: number) => void;
 };
 
-export const PokemonCard = ({ pokemon, typeIcons }: Props) => {
+export const PokemonCard = ({ pokemon, typeIcons, isFavorite, onToggleFavorite }: Props) => {
   const customStyles = {
     "--color-type": `var(--color-${pokemon.types[0].type.name}`,
   } as CSSProperties;
@@ -45,6 +48,22 @@ export const PokemonCard = ({ pokemon, typeIcons }: Props) => {
           loading="lazy"
           alt={`${pokemon.name} artwork`}
         />
+
+        {/* Botón de favorito — el estado viene del padre, no de localStorage */}
+        <button
+          className={`favorite-button ${isFavorite ? "favorite-button--active" : ""}`}
+          aria-label={
+            isFavorite
+              ? `Remove ${pokemon.name} from favorites`
+              : `Add ${pokemon.name} to favorites`
+          }
+          onClick={() => onToggleFavorite(pokemon.id)}
+        >
+          <svg className="favorite-button__icon" viewBox="0 0 24 24">
+            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
+          </svg>
+        </button>
+
         <section className="card__content">
           <h3 className="card__title">{pokemon.name}</h3>
           <ul aria-description="Stats resume">

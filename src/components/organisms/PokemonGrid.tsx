@@ -12,6 +12,8 @@ type Props = {
   isLoading: boolean;
   isFiltering: boolean;
   searchQuery: string;
+  favoriteIds: Set<number>;
+  onToggleFavorite: (id: number) => void;
 };
 
 export const PokemonGrid = ({
@@ -20,6 +22,8 @@ export const PokemonGrid = ({
   isLoading,
   isFiltering,
   searchQuery,
+  favoriteIds,
+  onToggleFavorite,
 }: Props) => {
   if (isLoading || isFiltering) {
     return (
@@ -45,7 +49,13 @@ export const PokemonGrid = ({
     <section>
       <ul className="grid">
         {pokemons.map((pokemon) => (
-          <PokemonCard key={`pokemon-card-${pokemon.id}`} pokemon={pokemon} typeIcons={typeIcons} />
+          <PokemonCard
+            key={`pokemon-card-${pokemon.id}`}
+            pokemon={pokemon}
+            typeIcons={typeIcons}
+            isFavorite={favoriteIds.has(pokemon.id)}
+            onToggleFavorite={onToggleFavorite}
+          />
         ))}
       </ul>
     </section>

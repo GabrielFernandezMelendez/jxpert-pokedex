@@ -1,6 +1,3 @@
-// Domain Entity — define qué es un Pokémon independientemente de dónde vengan los datos
-// Single Responsibility — este fichero solo define la estructura del dato
-
 export type PokemonType = {
   type: {
     name: string;
@@ -20,6 +17,7 @@ export type Pokemon = {
   types: PokemonType[];
   stats: PokemonStat[];
   sprites: {
+    front_default: string;
     other: {
       "official-artwork": {
         front_default: string;
