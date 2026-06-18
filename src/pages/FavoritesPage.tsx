@@ -40,7 +40,11 @@ export const FavoritesPage = () => {
 
   return (
     <div className="layout">
-      <Header logoSrc={HEADER.logoSrc} title={HEADER.title} />
+      <Header logoSrc={HEADER.logoSrc} title={HEADER.title}>
+        <Link to="/" className="header__favorites-btn">
+          ← Pokédex
+        </Link>
+      </Header>
 
       <main className="container">
         <div className="favorites">

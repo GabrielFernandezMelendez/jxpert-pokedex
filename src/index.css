@@ -711,3 +711,26 @@ custom-progress::-ms-fill {
 /* -------------------- */
 /* Favorites page - end */
 /* -------------------- */
+
+/* Header actions */
+.header__actions {
+  margin-left: auto;
+}
+
+.header__favorites-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-2xs) var(--spacing-m);
+  background-color: var(--color-neutral-900);
+  color: var(--color-neutral-0);
+  border-radius: var(--radius-xs);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.header__favorites-btn:hover {
+  opacity: 0.8;
+}

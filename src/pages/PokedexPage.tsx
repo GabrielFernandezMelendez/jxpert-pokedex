@@ -17,6 +17,8 @@ import { Footer } from "../components/organisms/Footer";
 import { SearchBar } from "../components/organisms/SearchBar";
 import { PokemonGrid } from "../components/organisms/PokemonGrid";
 
+import { Link } from "react-router-dom";
+
 const favoriteRepository = new LocalStorageFavoriteRepository();
 
 export const PokedexPage = () => {
@@ -33,7 +35,11 @@ export const PokedexPage = () => {
 
   return (
     <div className="layout">
-      <Header logoSrc={HEADER.logoSrc} title={HEADER.title} />
+      <Header logoSrc={HEADER.logoSrc} title={HEADER.title}>
+        <Link to="/favorites" className="header__favorites-btn">
+          ★ Favorites
+        </Link>
+      </Header>
 
       <main className="container">
         <SearchBar
