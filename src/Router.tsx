@@ -1,22 +1,21 @@
-import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import { App } from "./App";
-
-const routes = {
-  home: {
-    path: "/",
-    element: App,
-  },
-};
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { PokedexPage } from "./pages/PokedexPage";
+import { FavoritesPage } from "./pages/FavoritesPage";
 
 const router = createBrowserRouter([
   {
-    element: <Outlet />,
-    children: Object.values(routes).map(({ element: Element, path }) => ({
-      path,
-      element: <Element />,
-    })),
+    path: "/",
+    element: <PokedexPage />,
   },
-  { path: "*", element: <div className="notfound">Page not found</div> },
+  {
+    path: "/favorites",
+    element: <FavoritesPage />,
+  },
+  // Opcional: ruta 404 si quieres
+  {
+    path: "*",
+    element: <div className="notfound">Page not found</div>,
+  },
 ]);
 
 export const Router = () => {
