@@ -14,6 +14,7 @@ export type PokemonStat = {
 export type Pokemon = {
   id: number;
   name: string;
+  height: number;
   types: PokemonType[];
   stats: PokemonStat[];
   sprites: {

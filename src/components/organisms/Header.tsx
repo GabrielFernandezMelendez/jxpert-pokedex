@@ -1,7 +1,5 @@
-// Organismo — cabecera fija de la aplicación con logo, título y acciones opcionales
-// En la web: barra superior con el icono de pokeball, el texto "Pokédex" y navegación
-
 import type { ReactNode } from "react";
+import { Link } from "react-router-dom";
 
 type Props = {
   logoSrc: string;
@@ -12,8 +10,10 @@ type Props = {
 export const Header = ({ logoSrc, title, children }: Props) => {
   return (
     <header className="header">
-      <img src={logoSrc} alt="" className="header__logo" />
-      <p className="header__title">{title}</p>
+      <Link to="/" className="header__home">
+        <img src={logoSrc} alt="" className="header__logo" />
+        <p className="header__title">{title}</p>
+      </Link>
       {children && <nav className="header__actions">{children}</nav>}
     </header>
   );

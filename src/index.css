@@ -640,66 +640,61 @@ custom-progress::-ms-fill {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--spacing-xl);
 }
 
-.favorites__back {
-  align-self: flex-start;
-  color: var(--color-accent);
-  text-decoration: none;
-  font-weight: 600;
-  transition: opacity 0.2s;
-}
-
-.favorites__back:hover {
-  opacity: 0.7;
+.favorites__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 700px;
+  background: linear-gradient(to right, rgba(235, 210, 180, 0.45), rgba(190, 185, 230, 0.5));
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-m);
+  padding: 0;
+  overflow: hidden;
 }
 
 .favorites__title {
-  font-size: 1.5rem;
+  font-size: 1rem;
   font-weight: 700;
   color: var(--color-neutral-900);
   background-color: var(--color-neutral-0);
-  padding: var(--spacing-xs) var(--spacing-xl);
-  border-radius: var(--radius-m);
-  box-shadow: var(--shadow-s);
+  padding: var(--spacing-2xs) var(--spacing-xl);
+  border-radius: 0 0 var(--radius-m) var(--radius-m);
 }
 
 .favorites__showcase {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-2xl);
-  background: linear-gradient(135deg, rgba(200, 180, 220, 0.4), rgba(180, 200, 240, 0.4));
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-m);
   width: 100%;
-  max-width: 700px;
-  min-height: 300px;
+  min-height: 250px;
+  padding: var(--spacing-xl) var(--spacing-m);
 }
 
 .favorites__pokemon {
-  width: 120px;
-  height: 120px;
   object-fit: contain;
-  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2));
+  filter: drop-shadow(2px 4px 8px rgba(0, 0, 0, 0.25));
+  margin-left: -20px;
   transition: transform 0.2s;
 }
 
+.favorites__pokemon:first-child {
+  margin-left: 0;
+}
+
 .favorites__pokemon:hover {
-  transform: scale(1.1);
+  transform: scale(1.05);
 }
 
 .favorites__icons {
   display: flex;
   justify-content: center;
   gap: var(--spacing-xs);
-  padding: var(--spacing-s) var(--spacing-xl);
+  padding: var(--spacing-xs) var(--spacing-xl);
   background-color: var(--color-neutral-0);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-s);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 .favorites__icon {
@@ -712,9 +707,19 @@ custom-progress::-ms-fill {
 /* Favorites page - end */
 /* -------------------- */
 
-/* Header actions */
+/* -------------------- */
+/* Header actions - start */
+/* -------------------- */
+
 .header__actions {
   margin-left: auto;
+}
+
+.header__home {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-m);
+  text-decoration: none;
 }
 
 .header__favorites-btn {
@@ -734,3 +739,37 @@ custom-progress::-ms-fill {
 .header__favorites-btn:hover {
   opacity: 0.8;
 }
+
+.header__dream-team {
+  position: relative;
+  font-weight: 700;
+  color: var(--color-neutral-900);
+  font-size: 1rem;
+}
+
+.header__sparkle {
+  position: absolute;
+  color: var(--color-accent);
+}
+
+.header__sparkle--top {
+  top: -2px;
+  left: -14px;
+  font-size: 0.65rem;
+}
+
+.header__sparkle--mid {
+  top: -5px;
+  left: -30px;
+  font-size: 1.5rem;
+}
+
+.header__sparkle--bottom {
+  top: 12px;
+  left: -14px;
+  font-size: 0.65rem;
+}
+
+/* -------------------- */
+/* Header actions - end */
+/* -------------------- */

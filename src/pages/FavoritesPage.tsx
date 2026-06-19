@@ -2,7 +2,6 @@
 // Los pokémons favoritos se cargan desde localStorage y se resuelven contra la PokéAPI
 
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { HEADER, FOOTER } from "../constants/ui";
 import { Header } from "../components/organisms/Header";
 import { Footer } from "../components/organisms/Footer";
@@ -17,7 +16,6 @@ export const FavoritesPage = () => {
   const [favoritePokemons, setFavoritePokemons] = useState<Pokemon[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Carga los datos completos de cada pokémon favorito desde la API
   /* eslint-disable react-hooks/exhaustive-deps */
   useEffect(() => {
     const loadFavorites = async () => {
@@ -28,31 +26,39 @@ export const FavoritesPage = () => {
         setIsLoading(false);
         return;
       }
-      const pokemons = await Promise.all(
+      const pokemons: Pokemon[] = await Promise.all(
         ids.map((id) => fetch(`https://pokeapi.co/api/v2/pokemon/${id}`).then((res) => res.json())),
       );
-      setFavoritePokemons(pokemons);
+      // Ordena por height descendente — los más grandes se renderizan primero (detrás)
+      setFavoritePokemons(pokemons.sort((a, b) => b.height - a.height));
       setIsLoading(false);
     };
     loadFavorites();
   }, [favoriteIds.size]);
   /* eslint-enable react-hooks/exhaustive-deps */
 
+  // Calcula el tamaño visual basándose en el height real del pokémon
+  const getSize = (pokemon: Pokemon): number => {
+    if (favoritePokemons.length === 0) return 150;
+    const maxHeight = Math.max(...favoritePokemons.map((p) => p.height));
+    const minSize = 80;
+    const maxSize = 200;
+    return minSize + (pokemon.height / maxHeight) * (maxSize - minSize);
+  };
+
   return (
     <div className="layout">
       <Header logoSrc={HEADER.logoSrc} title={HEADER.title}>
-        <Link to="/" className="header__favorites-btn">
-          ← Pokédex
-        </Link>
+        <span className="header__dream-team">
+          <span className="header__sparkle header__sparkle--top">✦</span>
+          <span className="header__sparkle header__sparkle--mid">✦</span>
+          <span className="header__sparkle header__sparkle--bottom">✦</span>
+          Dream team
+        </span>
       </Header>
 
       <main className="container">
         <div className="favorites">
-          <Link to="/" className="favorites__back">
-            &larr; Back to Pokédex
-          </Link>
-          <h2 className="favorites__title">Dream team</h2>
-
           {isLoading && <p className="noresults">Loading your team...</p>}
 
           {!isLoading && favoritePokemons.length === 0 && (
@@ -60,17 +66,25 @@ export const FavoritesPage = () => {
           )}
 
           {!isLoading && favoritePokemons.length > 0 && (
-            <>
+            <div className="favorites__card">
+              <h2 className="favorites__title">Dream team</h2>
+
               <div className="favorites__showcase">
-                {favoritePokemons.map((pokemon) => (
+                {favoritePokemons.map((pokemon, index) => (
                   <img
                     key={pokemon.id}
                     className="favorites__pokemon"
                     src={pokemon.sprites.other["official-artwork"].front_default}
                     alt={pokemon.name}
+                    style={{
+                      width: `${getSize(pokemon)}px`,
+                      height: `${getSize(pokemon)}px`,
+                      zIndex: favoritePokemons.length - index,
+                    }}
                   />
                 ))}
               </div>
+
               <div className="favorites__icons">
                 {favoritePokemons.map((pokemon) => (
                   <img
@@ -81,7 +95,7 @@ export const FavoritesPage = () => {
                   />
                 ))}
               </div>
-            </>
+            </div>
           )}
         </div>
       </main>
