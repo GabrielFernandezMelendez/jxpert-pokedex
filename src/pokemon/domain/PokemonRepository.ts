@@ -6,4 +6,5 @@ import type { Pokemon } from "./Pokemon";
 
 export interface PokemonRepository {
   getByRegion(offset: number, limit: number): Promise<Pokemon[]>;
+  getById(id: number): Promise<Pokemon>;
 }

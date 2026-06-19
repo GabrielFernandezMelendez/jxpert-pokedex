@@ -1,7 +1,6 @@
 // Adapter — implementación concreta del puerto PokemonRepository
 // Principio aplicado: Dependency Inversion — implementa la interfaz del dominio
 // Patrón Adapter — traduce la respuesta de la PokéAPI al tipo Pokemon del dominio
-// Arquitectura Hexagonal — esta es la capa que conecta con el mundo exterior
 
 import type { Pokemon } from "../domain/Pokemon";
 import type { PokemonRepository } from "../domain/PokemonRepository";
@@ -19,5 +18,10 @@ export class ApiPokemonRepository implements PokemonRepository {
     );
 
     return pokemons;
+  }
+
+  async getById(id: number): Promise<Pokemon> {
+    const pokemon: Pokemon = await fetch(`${API_URL}/${id}`).then((res) => res.json());
+    return pokemon;
   }
 }
