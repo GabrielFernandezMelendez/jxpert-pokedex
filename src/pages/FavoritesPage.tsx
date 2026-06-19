@@ -1,6 +1,6 @@
 // Página de favoritos — muestra el "Dream Team" del usuario
 // Solo presentación — la lógica de carga y negocio vive en los hooks y casos de uso
-// getSize y getOffset son lógica de presentación — calculan tamaño y posición visual, no reglas de negocio
+// getSize, getOffset, getZIndex y getHorizontalOffset son lógica de presentación
 
 import { HEADER, FOOTER } from "../constants/ui";
 import { Header } from "../components/organisms/Header";
@@ -16,21 +16,35 @@ export const FavoritesPage = () => {
   const { favoriteIds } = useFavorites(favoriteRepository);
   const { team, isLoading } = useDreamTeam(favoriteIds);
 
-  // Tamaño visual proporcional al height real — los pequeños son notablemente más pequeños
   const getSize = (pokemon: Pokemon): number => {
     if (team.length === 0) return 150;
     const maxHeight = Math.max(...team.map((p) => p.height));
-    const minSize = 55;
+    const minSize = 40;
     const maxSize = 250;
     return minSize + (pokemon.height / maxHeight) * (maxSize - minSize);
   };
 
-  // Los pokémons pequeños se desplazan hacia abajo para posicionarse en el frente
   const getOffset = (pokemon: Pokemon): number => {
     if (team.length === 0) return 0;
     const maxHeight = Math.max(...team.map((p) => p.height));
     const ratio = pokemon.height / maxHeight;
-    return (1 - ratio) * 60;
+    return (1 - ratio) * 60 - 26;
+  };
+
+  const getZIndex = (pokemon: Pokemon): number => {
+    const sortedByHeight = [...team].sort((a, b) => b.height - a.height);
+    return sortedByHeight.findIndex((p) => p.id === pokemon.id) + 1;
+  };
+
+  // Desplaza los pokémons pequeños a la derecha para centrarlos con los grandes
+  const getHorizontalOffset = (pokemon: Pokemon): number => {
+    if (team.length === 0) return 0;
+    const maxHeight = Math.max(...team.map((p) => p.height));
+    const minHeight = Math.min(...team.map((p) => p.height));
+    const ratio = pokemon.height / maxHeight;
+    if (pokemon.height === minHeight) return -112; // Pikachu — más a la derecha que Flareon
+    if (ratio < 0.5) return -130; // Flareon
+    return -80; // grandes
   };
 
   return (
@@ -57,30 +71,20 @@ export const FavoritesPage = () => {
               <h2 className="favorites__title">Dream team</h2>
 
               <div className="favorites__showcase">
-                {team.map((pokemon, index) => {
-                  const isSmall = pokemon.zIndex >= 100; // según tu lógica
-                  const isFirstSmall =
-                    isSmall && team.slice(0, index).some((p) => p.zIndex >= 100) === false; // es el primer pequeño
-                  let className = "favorites__pokemon";
-                  if (isSmall) className += " favorites__pokemon--small";
-                  if (isFirstSmall) className += " favorites__pokemon--small-first";
-
-                  return (
-                    <img
-                      key={pokemon.id}
-                      className={className}
-                      src={pokemon.sprites.other["official-artwork"].front_default}
-                      alt={pokemon.name}
-                      style={{
-                        width: `${getSize(pokemon)}px`,
-                        height: `${getSize(pokemon)}px`,
-                        transform: `translateY(${getOffset(pokemon)}px)`,
-                        position: "relative",
-                        zIndex: pokemon.zIndex,
-                      }}
-                    />
-                  );
-                })}
+                {team.map((pokemon) => (
+                  <img
+                    key={pokemon.id}
+                    className="favorites__pokemon"
+                    src={pokemon.sprites.other["official-artwork"].front_default}
+                    alt={pokemon.name}
+                    style={{
+                      width: `${getSize(pokemon)}px`,
+                      height: `${getSize(pokemon)}px`,
+                      zIndex: getZIndex(pokemon),
+                      transform: `translateX(${getHorizontalOffset(pokemon)}px) translateY(${getOffset(pokemon)}px)`,
+                    }}
+                  />
+                ))}
               </div>
 
               <div className="favorites__icons">

@@ -647,12 +647,12 @@ custom-progress::-ms-fill {
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 700px;
+  max-width: 90%;
   background: linear-gradient(to right, rgba(235, 210, 180, 0.45), rgba(190, 185, 230, 0.5));
   border-radius: var(--radius-2xl);
   box-shadow: var(--shadow-m);
   padding: 0;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .favorites__title {
@@ -670,32 +670,23 @@ custom-progress::-ms-fill {
   align-items: flex-end;
   width: 100%;
   min-height: 300px;
-  padding: var(--spacing-m) var(--spacing-xl);
-  position: relative;
-  transform: translateY(-34px);
-  padding-left: -1500px; /* Ajusta este valor hasta que quede centrado */
+  padding: var(--spacing-xl);
 }
 
 .favorites__pokemon {
+  position: relative;
   object-fit: contain;
   filter: drop-shadow(2px 4px 8px rgba(0, 0, 0, 0.25));
-  margin-left: -154px;
+  margin: 0 4rem 0 -14rem;
   transition: transform 0.2s;
-}
-
-/* Para todos los pequeños: se superponen entre sí con menos margen */
-.favorites__pokemon--small {
-  margin-left: -55px; /* Ajusta según necesites */
-}
-
-/* Para el primer pequeño: lo separamos del último grande */
-.favorites__pokemon--small-first {
-  margin-left: -245px; /* Desplaza el grupo a la derecha */
-  padding-top: 9px;
 }
 
 .favorites__pokemon:first-child {
   margin-left: 0;
+}
+
+.favorites__pokemon:last-child {
+  margin-right: 0;
 }
 
 .favorites__pokemon:hover {
