@@ -10,14 +10,9 @@ import { FilterPokemons } from "../pokemon/application/FilterPokemons";
 const filterPokemons = new FilterPokemons();
 
 export const usePokemonSearch = (pokemons: Pokemon[]) => {
-  // Texto que el usuario escribe en el buscador
   const [searchQuery, setSearchQuery] = useState<string>("");
-  // Pokémons después de aplicar el filtro
   const [filteredPokemons, setFilteredPokemons] = useState<Pokemon[]>([]);
-  // Estado de filtrado — true mientras se procesa
   const [isFiltering, setIsFiltering] = useState<boolean>(false);
-
-  // Cuando llegan pokémons nuevos (cambio de región) actualiza la lista filtrada
 
   //el comentario de ESlint es para que no de error l carga de la posicion del array
   /* eslint-disable react-hooks/exhaustive-deps */

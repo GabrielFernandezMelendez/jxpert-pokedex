@@ -7,8 +7,6 @@ import type { Pokemon } from "../domain/Pokemon";
 import type { Region } from "../domain/Region";
 import type { PokemonRepository } from "../domain/PokemonRepository";
 
-// Mapa que traduce cada región a su offset y limit en la PokéAPI
-// Patrón aplicado: reemplaza la cadena de if/else por un objeto de configuración
 const regionConfig: Record<Region, { offset: number; limit: number }> = {
   kanto: { offset: 0, limit: 151 },
   johto: { offset: 151, limit: 100 },

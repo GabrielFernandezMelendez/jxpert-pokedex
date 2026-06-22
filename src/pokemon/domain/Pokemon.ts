@@ -1,23 +1,15 @@
-export type PokemonType = {
-  type: {
-    name: string;
-  };
-};
-
-export type PokemonStat = {
-  stat: {
-    name: string;
-  };
-  base_stat: number;
-};
-
 export type Pokemon = {
   id: number;
   name: string;
   height: number;
   weight: number;
-  types: PokemonType[];
-  stats: PokemonStat[];
+  types: {
+    type: { name: string };
+  }[];
+  stats: {
+    stat: { name: string };
+    base_stat: number;
+  }[];
   sprites: {
     front_default: string;
     other: {

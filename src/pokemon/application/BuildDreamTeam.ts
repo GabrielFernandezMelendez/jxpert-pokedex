@@ -1,4 +1,3 @@
-// Use Case — construye el Dream Team a partir de una lista de pokémons
 // Regla de negocio: máximo 6, grandes ordenados por weight ascendente, pequeños después
 // Principio aplicado: Single Responsibility — solo construye el equipo
 // Principio aplicado: Open-Closed — funciona con cualquier combinación de pokémons
